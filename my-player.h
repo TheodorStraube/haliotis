@@ -2,8 +2,18 @@
 
 struct position
 {
-	char line;
+	int line;
 	int diag;
+	
+};
+
+enum direction {topleft, topright, bottomleft, bottomright, left, right };
+
+struct turn
+{
+	std::vector<position> pieces;
+	
+	direction dir;	
 	
 };
 
