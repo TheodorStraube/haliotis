@@ -199,24 +199,7 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 	turn t;
 	
 	printf("Getting Moves for: %c at %c %i \n", color, line_names[pos->line], pos->diag);
-	
-// 	bool diagLB;
-// 	bool diagLT;
-// 	bool diagRT;
-// 	bool diagRB;
-// 	
-// 	bool bottom;
-// 	bool top;
-// 	
-// 	diagLB = pos->diag == 1;	
-// 	diagLT = pos->diag + 3 <= getLineIndex(pos->line);	
-// 	diagRT = pos-> diag == 9;	
-// 	diagRB = pos->diag - 5 >= getLineIndex(pos->line);	
-// 	bottom = pos->line == 'A';
-// 	top = pos->line == 'I';		
-	
-
-	
+		
 	bool isSumito;
 	int pushStrength;
 	int enemyPushStrength;
@@ -236,7 +219,7 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 		
 		for(unsigned depth = 0; depth < 6; ++depth)
 		{
-			movePosition(&p,(direction) dir);			
+			movePosition(&p,(direction) dir);
 			
 			if(inBounds(&p))
 			{
@@ -244,28 +227,37 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 				
 				char piece = getPiece(&p, board);
 				
-				if(piece == color && !isSumito && depth < 2)
+				if(piece == color && !isSumito && depth < 1)
 				{
-					printf("advance \n");
+					printf("standard-push \n");
 					positions.push_back(p);
-				}else if(piece == color && (isSumito || depth >= 2))
+				}else if(piece == color && (isSumito || depth >= 3))
 				{
+					printf("fail: 2 farbwechsel oder lange farbe \n");
 					break;
 				}else if(piece == antiColor && !isSumito && depth == 0)
 				{
+					printf("fail: alleine kein sumito \n");
 					break;
 				}else if(piece == antiColor && !isSumito)
 				{
+					printf("sumito-start, eigene stärke: %i \n", depth + 1);
 					++enemyPushStrength;
 					pushStrength = depth + 1;
 					isSumito = true;
 				}else if(piece == antiColor && isSumito)
 				{
+					printf("sumito mittelteil, selbst: %i, gegner: %i \n", pushStrength, enemyPushStrength + 1);
 					++enemyPushStrength;
-					if(enemyPushStrength >= pushStrength){break;}
+					if(enemyPushStrength >= pushStrength)
+					{
+						printf("fail: zu schwach für sumito \n");
+						break;						
+					}
 					
 				}else if(piece == '.' && !isSumito)
 				{
+					printf("standard ende \n");					
 					if(depth == 0){
 						positions.push_back(p);
 					}
@@ -274,12 +266,6 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 					turns.push_back(t);
 					break;
 				}
-				printf("falldown \n");
-					t.pieces = positions;
-					t.dir = (direction) dir;
-					turns.push_back(t);
-					break;
-
 			}else
 			{
 				if(!isSumito)
@@ -288,6 +274,7 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 					break;
 					
 				}else{
+					printf("erfolgreiches sumito \n");
 					t.pieces = positions;
 					t.dir = (direction) dir;
 					turns.push_back(t);		
@@ -296,13 +283,6 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 			}
 		}
 		
-	}
-		
-	p.line = pos->line - 1;  p.diag = pos->diag - 1;		
-	
-	if(inBounds(&p))
-	{
-		printf("es sind: %i \n", turns.size());
 	}
 	for(turn tu : turns)
 	{
@@ -315,17 +295,6 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 		printf("\n");
 	}
 
-	
-		
-	/*if(getPiece(&p, board) == color)
-	{
-	}
-	*/
-	
-
-	
-// 	printf("NACHBARN: %i %i %i %i \n", diagLB, diagLT, diagRT, diagRB);	
-	
 	return turns;
 }
 
@@ -354,7 +323,7 @@ void get_move(char *move, char *board)
 	
 	position p;
 	p.diag = 5;
-	p.line = 6;
+	p.line = 7;
 	
 	getMovesForPiece(&p, board);
 	
