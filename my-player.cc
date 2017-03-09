@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <cassert>
+#include <random>
 
 #include "mcp.h"
 #include "my-player.h"
@@ -19,6 +20,7 @@ bool inBounds(position *);
 void movePosition(position *, direction);
 void write_move(char *);
 void write_board(char *);
+void moveToString(turn *, char *);
 char getPiece(position *);
 vector<position> getAllPieces(char *);
 vector<turn> getMovesForPiece(position *);
@@ -79,20 +81,20 @@ void movePosition(position *pos, direction dir)
 
 void write_move(char *buf)
 {
-		buf[0]='I';
-		buf[1]='9';
-		buf[2]=',';
-		buf[3]='H';
-		buf[4]='8';
-		
-		buf[5] = '\0';
+
+	
+// 		buf[0]='I';
+// 		buf[1]='9';
+// 		buf[2]=',';
+// 		buf[3]='H';
+// 		buf[4]='8';
+// 		
+// 		buf[5] = '\0';
 	
         size_t const len = strlen(buf)+1;		
 		
         ssize_t count = write(CHILD_OUT_FD, buf, len);
 		assert(count == static_cast<ssize_t>(len));
-		
-		printf("%i \n", strlen(buf));
 		
         if(count != static_cast<ssize_t>(len))
 		{
@@ -136,6 +138,22 @@ void write_board(char *board)
         printf("             1   2   3   4   5\n\n");
         printf("You're playing as %s.\n", board[0] == 'B' ?
                "black" : "white");
+}
+void moveToString(turn *move, char *buf)
+{
+	
+	assert(move->pieces.size() > 1);
+	
+	if(move->pieces.size() == 2) // standard Zug
+	{		
+		buf[0] = line_names[move->pieces.front().line];
+		buf[1] = '0' + move->pieces.front().diag;
+		buf[2] = ',';
+		buf[3] = line_names[move->pieces.back().line];
+		buf[4] = '0' + move->pieces.back().diag;
+		
+		buf[5] = '\0';
+	}
 }
 
 char getPiece(position *pos, char *board)
@@ -191,7 +209,7 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 {
 	char color = getPiece(pos, board);
 	char antiColor = color == 'W' ? 'B' : 'W';
-	
+
 	vector<turn> turns = vector<turn>();
 	
 	position p;
@@ -223,7 +241,7 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 			
 			if(inBounds(&p))
 			{
-				printf("		%c %i | \n ", line_names[p.line], p.diag);
+// 				printf("		%c %i | \n ", line_names[p.line], p.diag);
 				
 				char piece = getPiece(&p, board);
 				
@@ -231,7 +249,7 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 				{
 					printf("standard-push \n");
 					positions.push_back(p);
-				}else if(piece == color && (isSumito || depth >= 3))
+				}else if(piece == color && (isSumito || depth >= 2))
 				{
 					printf("fail: 2 farbwechsel oder lange farbe \n");
 					break;
@@ -286,13 +304,13 @@ vector<turn> getMovesForPiece(position *pos, char *board)
 	}
 	for(turn tu : turns)
 	{
-		printf("\n MOVE: ");
+// 		printf("\n MOVE: ");
 		
 		for(position po : tu.pieces)
 		{
-			printf("%c %i | ", line_names[po.line], po.diag);
+// 			printf("%c %i | ", line_names[po.line], po.diag);
 		}
-		printf("\n");
+// 		printf("\n");
 	}
 
 	return turns;
@@ -319,13 +337,21 @@ vector<turn> getAllMoves(char *board)
 void get_move(char *move, char *board)
 {
 	
-	vector<position> positions = getAllPieces(board);
+	vector<turn> allTurns = getAllMoves(board);
+	
+	random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(0, allTurns.size() - 1);
+	
+    int randomIndex = dis(gen);
+	
+	moveToString(&allTurns.at(randomIndex), move);
 	
 	position p;
 	p.diag = 5;
 	p.line = 7;
 	
-	getMovesForPiece(&p, board);
+// 	getMovesForPiece(&p, board);
 	
 	//for(vector<position>::iterator it = positions.begin(); it != positions.end(); ++it) {
 	//	printf("OUT:   %c, %i --> %c \n", it->line, it->diag, getPiece(&*it, board));
