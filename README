@@ -1,0 +1,75 @@
+Haliotis
+========
+
+- Rules for Haliotis can be found online, at
+    https://http://en.wikipedia.org/wiki/Abalone_(board_game)
+    https://de.wikipedia.org/wiki/Abalone_(Spiel)
+- In addition to the above rules Haliotis ends in a draw if the game runs
+  longer than 100 turns, so your player has to make progress.
+- Your task is to write your own player in my-player.cc, so that your
+  player compiles, makes no invalid moves, and wins against a player
+  that always chooses random moves. This random player is very weak at
+  the game though.
+- You can have a look at example-player.cc, which is a player that allows
+  you to play the game by entering moves on the keyboard. You can use
+  this player to test yours, and you can take code from
+  example-player.cc. This is the only source you may copy code from.
+  For the format to enter moves see below.
+- You may usethe standard library for C/C++ and pthreads. If you
+  want to use other libraries, please ask.
+- You may not link against mcp.S.
+- The master control program (mcp) starts the players and passes the
+  board state to them.
+- Type `make help` and `mcp -h` to get an overview about the commands.
+- Do not hesitate to ask questions. If you have any questions about game
+  rules or the programming task, please ask them on
+    einfprakt@os.inf.tu-dresden.de
+
+Syntax for moves
+----------------
+
+The initial board, as written out by example-player, looks like this:
+
+I          W - W - W - W - W
+          / \ / \ / \ / \ / \
+H        W - W - W - W - W - W
+        / \ / \ / \ / \ / \ / \
+G      . - . - W - W - W - . - .
+      / \ / \ / \ / \ / \ / \ / \
+F    . - . - . - . - . - . - . - .
+    / \ / \ / \ / \ / \ / \ / \ / \
+E  . - . - . - . - . - . - . - . - .
+    \ / \ / \ / \ / \ / \ / \ / \ /
+D    . - . - . - . - . - . - . - .   9
+      \ / \ / \ / \ / \ / \ / \ /
+C      . - . - B - B - B - . - .   8
+        \ / \ / \ / \ / \ / \ /
+B        B - B - B - B - B - B   7
+          \ / \ / \ / \ / \ /
+A          B - B - B - B - B   6
+
+             1   2   3   4   5
+
+
+The lines are denoted by letters, and the diagonals are denoted by
+numbers. One possible 'inline' move would be to move B2 to C3, thus
+moving the piece that was on C3 to D4. The notation for that is the
+old and new position for the first moving piece in the row, separated
+by a comma. In this example this would be "B2,C3". A possible next
+move for white, moving just one piece, is H9,G8.
+
+Moves that push pieces of the opponent have the same form: the
+opponent's pieces are not explicitly stated in the move
+representation. The board status is needed to determine how many
+pieces have moved.
+
+A possible 'broadside' move for black would be to move the frontmost
+three pieces forward and to the left, thus moving C3 to D3, C4 to D4,
+and C5 to D5. This is denoted by first giving the range of pieces that
+should move, C3-C5, and then adding the target field for the first of
+these. So the complete move is C3-C5,D3. C5-C3,D5 would be an
+equivalent description.
+
+example-player expects moves to be entered in this exact form, with no
+additional spaces. This is also the format that your player should use
+to write its move to the mcp.

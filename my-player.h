@@ -3,18 +3,22 @@
 struct position
 {
 	int line;
-	int diag;
-	
+	int diag;	
 };
 
 enum direction {topleft, topright, bottomleft, bottomright, left, right };
 
 struct turn
 {
-	std::vector<position> pieces;
-	
-	direction dir;	
-	
+	std::vector<position> pieces;	
+	direction dir;		
+        bool isKickoff;
+        
+        bool operator < (const turn& t) const
+        {
+            return (!isKickoff && t.isKickoff);
+        }
+        
 };
 
 int const line_length[] = {5, 6, 7, 8, 9, 8, 7, 6, 5};
