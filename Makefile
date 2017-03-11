@@ -24,8 +24,8 @@ help:
 demo: mcp example-player
 	./mcp -d example-player example-player
 
-run: mcp example-player my-player
-	./mcp -d example-player my-player
+run: mcp rando my-player
+	./mcp -d rando my-player
 
 # add '-m 1024 -M 1024' to enforce memory limit
 fight: mcp my-player
